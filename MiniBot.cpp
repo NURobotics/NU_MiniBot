@@ -13,8 +13,11 @@ void nurc::MiniBot::finish()
   
 }
 
-/******************************************************************************/
+/********************************************************************************/
 
+/**
+ *  Initializes the Servo using an emum specified by timer_id
+ */
 nurc::Servo::Servo(Timer timer_id)
 {
   // Configuring a duty cycle to angle range conversion
@@ -42,11 +45,20 @@ nurc::Servo::Servo(Timer timer_id)
   initialize();
 }
 
+/**
+ *  Set the servo angle by mapping the angle between the min and max timer counts
+ */
 void nurc::Servo::setAngle(int angle)
 {
-  OCR0B = map(angle, 0, 180, bottom_count_, top_count_);
+  if(timer_ == TIMER_0)
+    OCR0B = map(angle, 0, 180, bottom_count_, top_count_);
+  else
+    OCR1B = map(angle, 0, 180, bottom_count_, top_count_);
 }
 
+/**
+ *  Turn the output compare modules off when deleted
+ */
 nurc::Servo::~Servo()
 {
   if(timer_ == TIMER_0) {
