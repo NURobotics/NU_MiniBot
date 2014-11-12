@@ -48,17 +48,18 @@ private:
 class MiniBot {
 public:
   MiniBot();
+  ~MiniBot();
   void moveForward();
   void moveBackward();
   void turnLeft();
   void turnRight();
   void drive();
   void stop();
+  Servo *gripper_;
+  Servo *lifter_;
 private:
-  Motor left_motor_;
-  Motor right_motor_;
-  Servo gripper_;
-  Servo lifter_;
+  Motor *left_motor_;
+  Motor *right_motor_;
 };
 
 } // namespace nurc
