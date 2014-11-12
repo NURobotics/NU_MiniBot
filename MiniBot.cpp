@@ -4,15 +4,22 @@ using namespace nurc;
 
 nurc::Servo::Servo(Timer timer_id)
 {
+  // Configuring a duty cycle to angle range conversion
+  // Using a 50Hz servo operating between 0.75ms and 2.4ms
+  bottom_count_ = 6;
+  top_count_ = 19;
   // Configure the timers
+  DDRB |= (1 << 2);  //port A7 is an output
+  DDRA |= (1 << 7);
+  TCCR0A = (1 << COM0A0) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
+  TCCR0B = (1 << CS02) | (1 << CS00) | (1 << WGM02);
+  OCR0A = 110;
+  OCR0B = 6; //bottom_count_;
+  
   if(timer_id == TIMER_0) {
-    // Configuring a duty cycle to angle range conversion
-    // Using a 50Hz servo operating between 0.75ms and 2.4ms
-    bottom_count_ = 6;
-    top_count_ = 19;
-    
-    // Set A7 as an output
-    DDRA = (1 << 7);
+    /*// Set A7 as an output
+    DDRB |= (1 << 2);
+    DDRA |= (1 << 7);
     
     // Set non-inverting mode
     // Set fast PWM Mode
@@ -21,7 +28,9 @@ nurc::Servo::Servo(Timer timer_id)
     
     // Set the frequency to 50Hz and initial duty cycle of 0
     OCR0A = 110;
-    OCR0B = bottom_count_;
+    OCR0B = bottom_count_;*/
+
+
   }
   else if(timer_id == TIMER_1) {
     // Configuring a duty cycle to angle range conversion
@@ -30,7 +39,8 @@ nurc::Servo::Servo(Timer timer_id)
     top_count_ = 19;
     
     // Set A7 as an output
-    DDRA = (1 << 5);
+    DDRA |= (1 << 6);
+    DDRA |= (1 << 5);
     
     // Set non-inverting mode
     // Set fast PWM Mode
@@ -41,11 +51,20 @@ nurc::Servo::Servo(Timer timer_id)
     OCR1A = 110;
     OCR1B = bottom_count_;
   }
+  DDRB |= (1 << 2);  //port A7 is an output
+  DDRA |= (1 << 7);
+  TCCR0A = (1 << COM0A0) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
+  TCCR0B = (1 << CS02) | (1 << CS00) | (1 << WGM02);
+  OCR0A = 110;
+  OCR0B = 6;
 }
 
 void nurc::Servo::setAngle(int angle)
 {
-  OCR0B = map(angle, 0, 180, bottom_count_, top_count_);
+  if(timer_ == TIMER_0)
+    OCR0B = map(angle, 0, 180, bottom_count_, top_count_);
+  else if(timer_ == TIMER_1)
+    OCR1B = map(angle, 0, 180, bottom_count_, top_count_);
 }
 
 nurc::Servo::~Servo()
@@ -72,8 +91,11 @@ nurc::Motor::Motor(int drive_pin, int direction_pin, bool inverted) :
 
 void nurc::Motor::driving(bool state)
 {
-  digitalWrite(drive_pin_, LOW);
   drive_state_ = state;
+  if(drive_state_ == true)
+    digitalWrite(drive_pin_, HIGH);
+  else
+    digitalWrite(drive_pin_, LOW);
 }
 
 void nurc::Motor::setDirection(Direction d)
@@ -99,13 +121,13 @@ nurc::Motor::~Motor()
 }
 
 nurc::MiniBot::MiniBot() :
-  left_motor_(),
-  right_motor_(),
-  gripper_(),
-  lifter_()
+  left_motor_(0, 1),
+  right_motor_(2, 3),
+  gripper_(TIMER_0),
+  lifter_(TIMER_1)
 {
   // Making sure that the clock frequency is maxed
-  if (F_CPU == 8000000) clock_prescale_set(clock_div_1);
+  // if (F_CPU == 8000000) clock_prescale_set(clock_div_1);
 }
 
 void nurc::MiniBot::drive()
