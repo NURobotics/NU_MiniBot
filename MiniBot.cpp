@@ -41,8 +41,6 @@ nurc::Servo::Servo(Timer timer_id)
     OCR1A = 110;
     OCR1B = bottom_count_;
   }
-  
-  initialize();
 }
 
 /**
@@ -120,6 +118,7 @@ nurc::MiniBot::MiniBot()
   right_motor_ = new Motor(2, 3);
   lifter_ = new Servo(TIMER_1);
   gripper_ = new Servo(TIMER_0);
+  initialize();
 }
 
 void nurc::MiniBot::drive()
