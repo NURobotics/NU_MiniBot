@@ -1,6 +1,19 @@
 #include <MiniBot.h>
 
-using namespace nurc;
+void nurc::MiniBot::initialize()
+{
+  // PUT ALL OF YOUR INITIALIZATION CODE HERE
+  
+}
+
+
+void nurc::MiniBot::finish()
+{
+  // PUT ANY EXIT CODE HERE
+  
+}
+
+/******************************************************************************/
 
 nurc::Servo::Servo(Timer timer_id)
 {
@@ -25,6 +38,8 @@ nurc::Servo::Servo(Timer timer_id)
     OCR1A = 110;
     OCR1B = bottom_count_;
   }
+  
+  initialize();
 }
 
 void nurc::Servo::setAngle(int angle)
@@ -137,8 +152,10 @@ void nurc::MiniBot::turnRight()
 
 nurc::MiniBot::~MiniBot()
 {
+  finish();
   delete left_motor_;
   delete right_motor_;
   delete lifter_;
   delete gripper_;
 }
+

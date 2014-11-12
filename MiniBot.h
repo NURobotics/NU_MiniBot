@@ -24,7 +24,6 @@ public:
   
   int duty_cycle_;
   void setAngle(int angle);
-private:
   Timer timer_;
   int bottom_count_;
   int top_count_;
@@ -37,7 +36,6 @@ public:
   ~Motor();
   void driving(bool state);
   void setDirection(Direction d);
-private:
   int drive_pin_;
   int direction_pin_;
   bool inverted_;
@@ -49,6 +47,9 @@ class MiniBot {
 public:
   MiniBot();
   ~MiniBot();
+  void initialize();
+  void finish();
+
   void moveForward();
   void moveBackward();
   void turnLeft();
@@ -57,7 +58,6 @@ public:
   void stop();
   Servo *gripper_;
   Servo *lifter_;
-private:
   Motor *left_motor_;
   Motor *right_motor_;
 };
