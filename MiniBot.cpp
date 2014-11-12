@@ -2,12 +2,15 @@
 
 using namespace nurc;
 
-nurc::Servo::Servo(int timer_id) :
-  bottom_count_(6),
-  top_count_(19)
+nurc::Servo::Servo(Timer timer_id)
 {
   // Configure the timers
   if(timer_id == TIMER_0) {
+    // Configuring a duty cycle to angle range conversion
+    // Using a 50Hz servo operating between 0.75ms and 2.4ms
+    bottom_count_ = 6;
+    top_count_ = 19;
+    
     // Set A7 as an output
     DDRA = (1 << 7);
     
@@ -18,9 +21,14 @@ nurc::Servo::Servo(int timer_id) :
     
     // Set the frequency to 50Hz and initial duty cycle of 0
     OCR0A = 110;
-    OCR0B = angle;
+    OCR0B = bottom_count_;
   }
   else if(timer_id == TIMER_1) {
+    // Configuring a duty cycle to angle range conversion
+    // Using a 50Hz servo operating between 0.75ms and 2.4ms
+    bottom_count_ = 6;
+    top_count_ = 19;
+    
     // Set A7 as an output
     DDRA = (1 << 5);
     
@@ -31,11 +39,11 @@ nurc::Servo::Servo(int timer_id) :
     
     // Set the frequency to 50Hz and initial duty cycle of 0
     OCR1A = 110;
-    OCR1B = angle;
+    OCR1B = bottom_count_;
   }
 }
 
-nurc::Servo::setAngle(int angle)
+void nurc::Servo::setAngle(int angle)
 {
   OCR0B = map(angle, 0, 180, bottom_count_, top_count_);
 }
@@ -50,26 +58,39 @@ nurc::Servo::~Servo()
   }
 }
 
-nurc::Motor::Motor(int drive_pin, int direction_pin) :
+nurc::Motor::Motor(int drive_pin, int direction_pin, bool inverted) :
   drive_pin_(drive_pin),
   direction_pin_(direction_pin),
-  drive_state_(false)
+  drive_state_(false),
+  inverted_(inverted)
 {
-  pinMode(pin, OUTPUT);
-  changeDirection(FORWARD);
+  pinMode(drive_pin, OUTPUT);
+  pinMode(direction_pin, OUTPUT);
+  setDirection(FORWARD);
   driving(false);
 }
 
-nurc::Motor::driving(bool state)
+void nurc::Motor::driving(bool state)
 {
   digitalWrite(drive_pin_, LOW);
   drive_state_ = state;
 }
 
-nurc::Motor::changeDirection(Direction d)
+void nurc::Motor::setDirection(Direction d)
 {
   direction_ = d;
-  digitalWrite(direction_pin_, d);
+  if(d == FORWARD) {
+    if(!inverted_)
+      digitalWrite(direction_pin_, HIGH);
+    else
+      digitalWrite(direction_pin_, LOW);
+  }
+  else if(d == BACKWARD) {
+    if(!inverted_)
+      digitalWrite(direction_pin_, LOW);
+    else
+      digitalWrite(direction_pin_, HIGH);
+  }
 }
 
 nurc::Motor::~Motor()
@@ -77,7 +98,7 @@ nurc::Motor::~Motor()
   digitalWrite(drive_pin_, LOW);
 }
 
-nurc::MiniBot() :
+nurc::MiniBot::MiniBot() :
   left_motor_(),
   right_motor_(),
   gripper_(),
@@ -99,28 +120,28 @@ void nurc::MiniBot::stop()
   right_motor_.driving(false);
 }
 
-nurc::MiniBot::moveForward()
+void nurc::MiniBot::moveForward()
 {
   left_motor_.setDirection(FORWARD);
   right_motor_.setDirection(FORWARD);
   drive();
 }
 
-nurc::MiniBot::moveBackward()
+void nurc::MiniBot::moveBackward()
 {
   left_motor_.setDirection(BACKWARD);
   right_motor_.setDirection(BACKWARD);
   drive();
 }
 
-nurc::MiniBot::turnLeft()
+void nurc::MiniBot::turnLeft()
 {
   left_motor_.setDirection(BACKWARD);
   right_motor_.setDirection(FORWARD);
   drive();
 }
 
-nurc::MiniBot::turnRight()
+void nurc::MiniBot::turnRight()
 {
   left_motor_.setDirection(FORWARD);
   right_motor_.setDirection(BACKWARD);

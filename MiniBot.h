@@ -19,7 +19,7 @@ enum Direction {
 
 class Servo {
 public:
-  Servo(int timer_id = TIMER_0);
+  Servo(Timer timer_id = TIMER_0);
   ~Servo();
   
   int duty_cycle_;
@@ -33,11 +33,10 @@ private:
 
 class Motor {
 public:
-  Motor(int pin);
+  Motor(int drive_pin, int direction_pin, bool inverted = false);
   ~Motor();
-  
   void driving(bool state);
-  void changeDirection(Direction d);
+  void setDirection(Direction d);
 private:
   int drive_pin_;
   int direction_pin_;
@@ -49,10 +48,10 @@ private:
 class MiniBot {
 public:
   MiniBot();
-  moveForward();
-  moveBackward();
-  turnLeft();
-  turnRight();
+  void moveForward();
+  void moveBackward();
+  void turnLeft();
+  void turnRight();
   void drive();
   void stop();
 private:
