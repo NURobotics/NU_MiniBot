@@ -10,7 +10,7 @@ Servo
 
 Motor
 ---
-+ On / Off motor control with directional control using H-bridge
++ On / Off motor control with direction flag using H-bridge
 
 MiniBot
 ---
