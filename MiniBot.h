@@ -9,7 +9,8 @@ namespace nurc {
 enum Timer {
   TIMER_0,
   TIMER_1,
-  NUM_TIMERS
+  NUM_TIMERS,
+  INVALID_TIMER
 };
 
 enum Direction {
@@ -21,9 +22,11 @@ class Servo {
 public:
   Servo(Timer timer_id = TIMER_0);
   ~Servo();
+  void reset(Timer timer_id);
   
-  int duty_cycle_;
   void setAngle(int angle);
+  void configureTimer(Timer timer_id);
+  int duty_cycle_;
   Timer timer_;
   int bottom_count_;
   int top_count_;
@@ -32,8 +35,10 @@ public:
 
 class Motor {
 public:
-  Motor(int drive_pin, int direction_pin, bool inverted = false);
+  Motor(int drive_pin = -1, int direction_pin = -1, bool inverted = false);
   ~Motor();
+  void reset(int drive_pin, int direction_pin, bool inverted = false);
+
   void driving(bool state);
   void setDirection(Direction d);
   int drive_pin_;
@@ -47,8 +52,9 @@ class MiniBot {
 public:
   MiniBot();
   ~MiniBot();
+  void reset();
   void initialize();
-  void finish();
+  void release();
 
   void moveForward();
   void moveBackward();
@@ -56,11 +62,21 @@ public:
   void turnRight();
   void drive();
   void stop();
-  Servo *gripper_;
-  Servo *lifter_;
-  Motor *left_motor_;
-  Motor *right_motor_;
+  Servo gripper_;
+  Servo lifter_;
+  Motor left_motor_;
+  Motor right_motor_;
+  
+  inline static void delay_ms(volatile unsigned long ms) {
+    ms *= 240;
+    for(; ms != 0; ms--); 
+  }
 };
+  
+inline void delay_ms(volatile unsigned long ms) {
+  ms *= 240;
+  for(; ms != 0; ms--); 
+}
 
 } // namespace nurc
 

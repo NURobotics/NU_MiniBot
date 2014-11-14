@@ -12,8 +12,8 @@ void setup()
 
 void loop()
 {
-  my_robot.turnRight();
-  delay_ms(3000);
+  my_robot.moveForward();
+  delay_ms(5000);
   my_robot.turnLeft();
-  delay_ms(3000);
+  delay_ms(5000);
 }
