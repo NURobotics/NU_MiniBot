@@ -66,11 +66,6 @@ public:
   Servo lifter_;
   Motor left_motor_;
   Motor right_motor_;
-  
-  inline static void delay_ms(volatile unsigned long ms) {
-    ms *= 240;
-    for(; ms != 0; ms--); 
-  }
 };
   
 inline void delay_ms(volatile unsigned long ms) {
