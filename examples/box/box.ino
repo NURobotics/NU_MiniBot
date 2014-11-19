@@ -15,5 +15,5 @@ void loop()
   my_robot.moveForward();
   delay_ms(5000);
   my_robot.turnLeft();
-  delay_ms(5000);
+  delay_ms(1000);
 }

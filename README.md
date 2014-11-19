@@ -15,3 +15,5 @@ Motor
 MiniBot
 ---
 + Adaptable class with two motors and two servos.
+
+Consult comments in source for more detailed documentation.

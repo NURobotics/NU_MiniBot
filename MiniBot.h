@@ -62,8 +62,6 @@ public:
   void turnRight();
   void drive();
   void stop();
-  Servo gripper_;
-  Servo lifter_;
   Motor left_motor_;
   Motor right_motor_;
 };

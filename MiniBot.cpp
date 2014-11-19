@@ -5,6 +5,8 @@ using namespace nurc;
 void MiniBot::initialize()
 {
   // PUT ALL OF YOUR INITIALIZATION CODE HERE
+  // This would include setting up any objects you inserted into the MiniBot header file
+  // You could add more Motors, Servos, or your own functionality for sensing, etc.
   
 }
 
@@ -23,7 +25,7 @@ void MiniBot::release()
 Servo::Servo(Timer timer_id)
 {
   // Configuring a duty cycle to angle range conversion
-  // Using a 50Hz servo operating between 0.75ms and 2.4ms
+  // Using a 50Hz servo operating between appoximately 0.75ms and 2.4ms
   bottom_count_ = 6;
   top_count_ = 19;
   configureTimer(timer_id);
@@ -32,16 +34,16 @@ Servo::Servo(Timer timer_id)
 void Servo::configureTimer(Timer timer_id)
 {
   if(timer_id == TIMER_0) {
-    DDRB |= (1 << 2);  //port A7 is an output
+    DDRB |= (1 << 2);             // port 7 is the OC0 output
     DDRA |= (1 << 7);
     TCCR0A = (1 << COM0A0) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
     TCCR0B = (1 << CS02) | (1 << CS00) | (1 << WGM02);
     OCR0A = 110;
-    OCR0B = bottom_count_; //bottom_count_;
+    OCR0B = bottom_count_;
     timer_ = timer_id;
   }
   else if(timer_id == TIMER_1) {
-    DDRA = (1 << 6);
+    DDRA = (1 << 6);              // port 8 is the OC1 output
     DDRA = (1 << 5);
     TCCR1A = (1 << COM0A0) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00);
     TCCR1B = (1 << CS02) | (1 << CS00) | (1 << WGM02);
@@ -55,6 +57,7 @@ void Servo::configureTimer(Timer timer_id)
 
 void Servo::reset(Timer timer_id)
 {
+  // Turn off the previous timer and configure the desired timer
   if(timer_ == TIMER_0)
     TCCR0A &= ~(1 << 31);
   else if(timer_ == TIMER_1)
@@ -67,6 +70,7 @@ void Servo::reset(Timer timer_id)
  */
 void Servo::setAngle(int angle)
 {
+  // Map the servo angle to the timer count using the servo delay conversion
   if(timer_ == TIMER_0)
     OCR0B = map(angle, 0, 180, bottom_count_, top_count_);
   else
@@ -78,6 +82,7 @@ void Servo::setAngle(int angle)
  */
 Servo::~Servo()
 {
+  // Turn off the pwm output
   if(timer_ == TIMER_0)
     TCCR0A &= ~(1 << 31);
   else if(timer_ == TIMER_1)
@@ -91,6 +96,7 @@ Motor::Motor(int drive_pin, int direction_pin, bool inverted)
 
 void Motor::reset(int drive_pin, int direction_pin, bool inverted)
 {
+  // Configure the new desired pins and inversion
   drive_pin_ = drive_pin;
   direction_pin_ = direction_pin;
   drive_state_ = false;
@@ -104,6 +110,7 @@ void Motor::reset(int drive_pin, int direction_pin, bool inverted)
 
 void Motor::driving(bool state)
 {
+  // Enable both motors
   drive_state_ = state;
   if(drive_state_ == true)
     digitalWrite(drive_pin_, HIGH);
@@ -113,6 +120,7 @@ void Motor::driving(bool state)
 
 void Motor::setDirection(Direction d)
 {
+  // Change the phase for both motors for directional control
   direction_ = d;
   if(d == FORWARD) {
     if(!inverted_)
@@ -144,8 +152,6 @@ void MiniBot::reset()
 {
   left_motor_ = Motor(0, 1);
   right_motor_ = Motor(2, 3);
-  lifter_ = Servo(TIMER_1);
-  gripper_ = Servo(TIMER_0);
   initialize();
 }
 
